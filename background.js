@@ -41,7 +41,6 @@ function update(newRectangle) {
                     height: newRectangle.model.height
                 }]
             });
-            console.log('from if', config);
         } else {
             for (var i = 0; i < config.allPages.length; i++) {
                 if (config.allPages[i].url == url) {
@@ -53,7 +52,6 @@ function update(newRectangle) {
                     });
                 }
             }
-            console.log('from else',  config);
         }
         render(url);
     });
@@ -67,9 +65,6 @@ function render(currentUrl) {
                 name: 'render',
                 model: config.allPages[i].model
             };
-            console.log(modelToRender);
-            //port.postMessage({checking: 'one two'});
-            //port.postMessage({modelToRender: modelToRender});
         }
     }
 }
