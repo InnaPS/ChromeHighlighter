@@ -32,7 +32,6 @@
 
        
         function onMouseDown () {
-            console.log("begun.");
             mouse.startX = mouse.x;
             mouse.startY = mouse.y;
             rect = {
@@ -49,7 +48,6 @@
                     }
                 }
                 rect = null;
-                console.log("finished.");
             }
         }
 
