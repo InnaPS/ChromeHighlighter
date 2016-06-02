@@ -4,6 +4,11 @@
     opacity: 0.4;
     z-index: 9999999
 }
+.viewRect {
+    position: absolute;
+    border: 2px dashed darkred;
+    z-index: 9999999
+}
 .non-selectable {
     -moz-user-select: none;
     -khtml-user-select: none;
