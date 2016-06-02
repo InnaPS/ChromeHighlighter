@@ -1,5 +1,5 @@
 
-var config = {allPages: []};
+var config = {};
 
 function setup() {
     chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
@@ -32,16 +32,12 @@ function update(newRectangle) {
         model = _.clone(newRectangle.model);
     chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
         url = tabs[0].url;
-        if (!config.allPages.length) {
-            config.allPages.push({
-                url: url,
-                name: newRectangle.name,
-                model: model
-            });
+        if ($.isEmptyObject(config)) {
+            config[url] = [model];
         } else {
-            for (var i = 0; i < config.allPages.length; i++) {
-                if (config.allPages[i].url == url) {
-                    config.allPages[i].model.push(model);
+            for (key in config) {
+                if (key === url) {
+                    config[key].push(model);
                 }
             }
         }
@@ -51,11 +47,11 @@ function update(newRectangle) {
 }
 
 function render(currentUrl) {
-    for (var i = 0; i < config.allPages.length; i++) {
-        if (config.allPages[i].url == currentUrl) {
+    for (key in config) {
+        if (key === currentUrl) {
             var modelToRender = {
                 name: 'render',
-                model: config.allPages[i].model
+                model: config[key]
             };
         }
     }
