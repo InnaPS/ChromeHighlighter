@@ -8,7 +8,9 @@ function setup() {
             chrome.tabs.executeScript(null, {
                 code: 'var config = ' + JSON.stringify(config)
             }, function() {
-                chrome.tabs.executeScript(null, { file: "content.js" });
+                chrome.tabs.executeScript(null, { file: "lodash.js" }, function() {
+                    chrome.tabs.executeScript(null, { file: "content.js" })
+                });
             });
         }
     });
@@ -18,7 +20,7 @@ function setup() {
     var toggle = true;
     chrome.runtime.onConnect.addListener(function(port) {
         port.onMessage.addListener(function(msg) {
-            if (msg.newRect)
+            if (msg.create)
                 update(msg.create);
         });
     });
@@ -26,30 +28,20 @@ function setup() {
 }
 
 function update(newRectangle) {
-    var url;
-
+    var url,
+        model = _.clone(newRectangle.model);
     chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
         url = tabs[0].url;
-        if (config.allPages.length == 0) {
+        if (!config.allPages.length) {
             config.allPages.push({
                 url: url,
                 name: newRectangle.name,
-                model: [{
-                    x: newRectangle.model.x,
-                    y: newRectangle.model.y,
-                    width: newRectangle.model.width,
-                    height: newRectangle.model.height
-                }]
+                model: model
             });
         } else {
             for (var i = 0; i < config.allPages.length; i++) {
                 if (config.allPages[i].url == url) {
-                    config.allPages[i].model.push({
-                        x: newRectangle.model.x,
-                        y: newRectangle.model.y,
-                        width: newRectangle.model.width,
-                        height: newRectangle.model.height
-                    });
+                    config.allPages[i].model.push(model);
                 }
             }
         }
@@ -70,8 +62,4 @@ function render(currentUrl) {
 }
 
 setup();
-
-
-
-
 
