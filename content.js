@@ -1,5 +1,4 @@
 
-
      function init() {
         var port = chrome.runtime.connect({name: "knockknock"});
         port.onMessage.addListener(function(msg) {
@@ -92,9 +91,7 @@
     }
 
 
-
     init();
-
 
 
 
