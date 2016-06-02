@@ -1,38 +1,6 @@
 $(document).ready(function(){
 
-    //method for comparing arrays - to delete and replace with lodash lib
-    if(Array.prototype.equalS)
-        console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.");
-    // attach the .equals method to Array's prototype to call it on any array
-    Array.prototype.equalS = function (array) {
-        // if the other array is a falsy value, return
-        if (!array)
-            return false;
-
-        // compare lengths - can save a lot of time
-        if (this.length != array.length)
-            return false;
-
-        for (var i = 0, l=this.length; i < l; i++) {
-            // Check if we have nested arrays
-            if (this[i] instanceof Array && array[i] instanceof Array) {
-                // recurse into the nested arrays
-                if (!this[i].equalS(array[i]))
-                    return false;
-            }
-            else if (this[i] != array[i]) {
-                // Warning - two different object instances will never be equal: {x:20} != {x:20}
-                return false;
-            }
-        }
-        return true;
-    };
-    // Hide method from for-in loops
-    Object.defineProperty(Array.prototype, "equalS", {enumerable: false});
-
-
-
-    function init() {
+     function init() {
         var port = chrome.runtime.connect({name: "knockknock"});
         port.postMessage({joke: "Knock knock"});
         port.onMessage.addListener(function(msg) {
@@ -70,10 +38,7 @@ $(document).ready(function(){
             }
         }
 
-        /*function onKeyDown () {
-
-        }*/
-
+       
         function onMouseDown () {
             console.log("begun.");
             mouse.startX = mouse.x;
@@ -96,11 +61,7 @@ $(document).ready(function(){
             }
         }
 
-        /*function onKeyUp () {
-            document.body.className = '';
-        }*/
-
-
+      
 
         document.body.onmousemove = function (e) {
             setMousePosition(e);
