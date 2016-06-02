@@ -1,16 +1,11 @@
-$(document).ready(function(){
+
 
      function init() {
         var port = chrome.runtime.connect({name: "knockknock"});
-        port.postMessage({joke: "Knock knock"});
         port.onMessage.addListener(function(msg) {
-            if (msg.question == "Who's there?")
-                console.log(msg.question);
             //if (msg.modelToRender)
                 //console.log(msg.modelToRender);
                 //render(msg.modelToRender);
-            if (msg.checking == 'one two')
-                console.log('OK');
         });
 
 
@@ -53,7 +48,7 @@ $(document).ready(function(){
             if (rect !== null) {
                 if (rect.model.width != "" && rect.model.width != "0px" && rect.model.width != undefined) {
                     if (rect.model.height != "" && rect.model.height != "0px" && rect.model.height != undefined) {
-                        port.postMessage({newRect: rect});
+                        port.postMessage({create: rect});
                     }
                 }
                 rect = null;
@@ -108,5 +103,4 @@ $(document).ready(function(){
 
 
 
-}); // the end
 
