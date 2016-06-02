@@ -8,8 +8,7 @@ function setup() {
             chrome.tabs.executeScript(null, {
                 code: 'var config = ' + JSON.stringify(config)
             }, function() {
-                chrome.tabs.executeScript(null, { file: "jquery.js" }, function() {
-                    chrome.tabs.executeScript(null, { file: "content.js"})});
+                chrome.tabs.executeScript(null, { file: "content.js" })
             });
         }
     });
