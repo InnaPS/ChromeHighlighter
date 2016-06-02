@@ -8,7 +8,7 @@ function setup() {
             chrome.tabs.executeScript(null, {
                 code: 'var config = ' + JSON.stringify(config)
             }, function() {
-                chrome.tabs.executeScript(null, { file: "content.js" })
+                chrome.tabs.executeScript(null, { file: "content.js" });
             });
         }
     });
@@ -17,14 +17,10 @@ function setup() {
 
     var toggle = true;
     chrome.runtime.onConnect.addListener(function(port) {
-        //port.postMessage({toggle: toggle});
         port.onMessage.addListener(function(msg) {
-            if (msg.joke == "Knock knock")
-                port.postMessage({question: "Who's there?"});
             if (msg.newRect)
-                update(msg.newRect);
+                update(msg.create);
         });
-        port.postMessage({checking: 'one two'});
     });
 
 }
