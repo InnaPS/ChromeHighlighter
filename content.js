@@ -3,9 +3,7 @@
      function init() {
         var port = chrome.runtime.connect({name: "knockknock"});
         port.onMessage.addListener(function(msg) {
-            //if (msg.modelToRender)
-                //console.log(msg.modelToRender);
-                //render(msg.modelToRender);
+
         });
 
 
@@ -16,8 +14,7 @@
             startY: 0,
             x: 0,
             y: 0
-        },
-        url = document.location.href; //???
+        }
 
         function setMousePosition(e) {
             mouse.x = e.pageX;
