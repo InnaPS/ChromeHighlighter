@@ -32,7 +32,7 @@ function update(newRectangle) {
         model = _.clone(newRectangle.model);
     chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
         url = tabs[0].url;
-        if ($.isEmptyObject(config)) {
+        if (_.isEmpty(config)) {
             config[url] = [model];
         } else {
             for (key in config) {
