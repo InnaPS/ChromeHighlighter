@@ -1,64 +1,55 @@
 
      function init() {
-        var port = chrome.runtime.connect({name: "knockknock"});
-        port.onMessage.addListener(function(msg) {
 
-        });
-
-        var viewRect = {
+        var rect = {
             rect: null,
             x: 0,
             y: 0
         },
-        rect = null;
+        viewRect = null;
 
         function setMousePosition(e) {
-            viewRect.x = e.pageX;
-            viewRect.y = e.pageY;
+            rect.x = e.pageX;
+            rect.y = e.pageY;
         }
 
         function onMouseMove () {
-            if (viewRect.rect !== null) {
-                rect.style.left = viewRect.rect.model.x = (viewRect.x - viewRect.startX < 0) ? viewRect.x + 'px' : viewRect.startX + 'px';
-                rect.style.top = viewRect.rect.model.y = (viewRect.y - viewRect.startY < 0) ? viewRect.y + 'px' : viewRect.startY + 'px';
-                rect.style.width = viewRect.rect.model.width = Math.abs(viewRect.x - viewRect.startX) + 'px';
-                rect.style.height = viewRect.rect.model.height = Math.abs(viewRect.y - viewRect.startY) + 'px';
+            if (rect.rect !== null) {
+                viewRect.style.left = rect.rect.model.x = (rect.x - rect.startX < 0) ? rect.x + 'px' : rect.startX + 'px';
+                viewRect.style.top = rect.rect.model.y = (rect.y - rect.startY < 0) ? rect.y + 'px' : rect.startY + 'px';
+                viewRect.style.width = rect.rect.model.width = Math.abs(rect.x - rect.startX) + 'px';
+                viewRect.style.height = rect.rect.model.height = Math.abs(rect.y - rect.startY) + 'px';
             }
         }
 
-       
         function onMouseDown () {
-            viewRect.startX = viewRect.x;
-            viewRect.startY = viewRect.y;
-            viewRect.rect = {
+            rect.startX = rect.x;
+            rect.startY = rect.y;
+            rect.rect = {
                 name: 'update',
                 model: {}
             };
-            rect = document.createElement('div');
-            rect.className = 'viewRect';
-            rect.style.left = viewRect.x + 'px';
-            rect.style.top = viewRect.y + 'px';
-            document.body.appendChild(rect);
+            viewRect = document.createElement('div');
+            viewRect.className = 'viewRect';
+            viewRect.style.left = rect.x + 'px';
+            viewRect.style.top = rect.y + 'px';
+            document.body.appendChild(viewRect);
         }
 
         function onMouseUp () {
-            if (viewRect.rect !== null) {
-                if (viewRect.rect.model.width != "" && viewRect.rect.model.width != "0px" && viewRect.rect.model.width != undefined) {
-                    if (viewRect.rect.model.height != "" && viewRect.rect.model.height != "0px" && viewRect.rect.model.height != undefined) {
-                        port.postMessage({create: rect});
+            if (!_.isEmpty(rect.rect)) {
+                if (rect.rect.model.width != "" && rect.rect.model.width != "0px" && rect.rect.model.width != undefined) {
+                    if (rect.rect.model.height != "" && rect.rect.model.height != "0px" && rect.rect.model.height != undefined) {
+                        chrome.runtime.sendMessage({type: rect.rect}, function(response) {});
                     }
                 }
-                viewRect.rect = null;
+                rect.rect = null;
                 var rectsToDelete = document.querySelectorAll('.viewRect');
-
-
                 for (var m = 0; m < rectsToDelete.length; m++) {
                     document.body.removeChild(rectsToDelete[m]);
                 }
             }
         }
-
-      
 
         document.body.onmousemove = function (e) {
             setMousePosition(e);
@@ -89,18 +80,33 @@
             }
         };
 
-
-
+         chrome.runtime.onMessage.addListener(
+             function(request, sender, sendResponse) {
+                 if(request.model)
+                     render(request.model);
+                 return true;
+         });
 
     }
 
-    function render() {
+    function render(model) {
+        var oldRects = document.querySelectorAll('.rectangle');
+        if (oldRects) {
+            for (var k = 0; k < oldRects.length; k++) {
+                document.body.removeChild(oldRects[k]);
+            }
+        }
+        for (var i = 0; i < model.model.length; i++) {
+            var restoredRect = document.createElement('div');
+            restoredRect.className = 'rectangle';
+            restoredRect.style.left = model.model[i].x;
+            restoredRect.style.top = model.model[i].y;
+            restoredRect.style.width = model.model[i].width;
+            restoredRect.style.height = model.model[i].height;
+            document.body.appendChild(restoredRect);
+        }
 
     }
 
 
     init();
-
-
-
-
