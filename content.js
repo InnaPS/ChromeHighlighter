@@ -80,16 +80,17 @@
             }
         };
 
-         chrome.runtime.onMessage.addListener(
-             function(request, sender, sendResponse) {
-                 if(request.model)
-                     render(request.model);
-                 return true;
-         });
+
+         /*if(request.model)
+             render(request.model);*/
+
+
 
     }
 
-    function render(model) {
+
+
+    /*function render(model) {
         var oldRects = document.querySelectorAll('.rectangle');
         if (oldRects) {
             for (var k = 0; k < oldRects.length; k++) {
@@ -106,7 +107,14 @@
             document.body.appendChild(restoredRect);
         }
 
-    }
+    }*/
 
 
-    init();
+    //init();
+
+     chrome.runtime.onMessage.addListener(
+         function(request, sender, sendResponse) {
+             if(request.toggle)
+                 init();
+         return true;
+     });
