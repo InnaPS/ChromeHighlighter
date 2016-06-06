@@ -90,7 +90,7 @@
 
 
 
-    /*function render(model) {
+    function render(model) {
         var oldRects = document.querySelectorAll('.rectangle');
         if (oldRects) {
             for (var k = 0; k < oldRects.length; k++) {
@@ -107,7 +107,7 @@
             document.body.appendChild(restoredRect);
         }
 
-    }*/
+    }
 
 
     //init();
