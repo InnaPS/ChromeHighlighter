@@ -5,12 +5,8 @@ function setup() {
     chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
         if (changeInfo.status == 'complete') {
             chrome.tabs.insertCSS(null, {file: "mainStyles.css"});
-            chrome.tabs.executeScript(null, {
-                code: 'var config = ' + JSON.stringify(config)
-            }, function() {
-                chrome.tabs.executeScript(null, { file: "lodash.js" }, function() {
-                    chrome.tabs.executeScript(null, { file: "content.js" })
-                });
+            chrome.tabs.executeScript(null, { file: "lodash.js" }, function() {
+                chrome.tabs.executeScript(null, { file: "content.js" })
             });
         }
     });
@@ -27,39 +23,48 @@ function setup() {
 }
 
 function update(newRectangle) {
-    var url,
-        model = _.clone(newRectangle.model);
+    var model = _.clone(newRectangle.model);
     chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
-        url = tabs[0].url;
+        updateModel(tabs[0].url);
+    });
+
+    function updateModel(url) {
+        var link = url;
         if (_.isEmpty(config)) {
-            config[url] = [model];
+            config[link] = [model];
         } else {
             for (key in config) {
-                if (key === url) {
+                if (key === link) {
                     config[key].push(model);
+                } else {
+                    config[link] = [model];
                 }
             }
         }
-        render(url);
-    });
+        chrome.storage.local.set(config, function () { });
+        render(link);
+    }
 
 }
 
 function render(currentUrl) {
-    for (key in config) {
-        if (key === currentUrl) {
-            var modelToRender = {
-                name: 'render',
-                model: config[key]
-            };
-            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {model: modelToRender}, function(response) {
+    chrome.storage.local.get(config, function (result) {
+        for (key in result) {
+            if (key === currentUrl) {
+                var modelToRender = {
+                    name: 'render',
+                    model: result[key]
+                };
+                chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                    chrome.tabs.sendMessage(tabs[0].id, {model: modelToRender}, function(response) {
 
+                    });
                 });
-            });
+            }
         }
-    }
+    });
 }
+
 
 setup();
 
