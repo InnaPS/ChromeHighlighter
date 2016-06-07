@@ -32,13 +32,13 @@ function update(newRectangle) {
     function updateModel(url) {
         var link = url;
         if (_.isEmpty(config)) {
-            config[link] = [newRectangle.model];
+            config[link] = [newRectangle];
         } else {
             for (key in config) {
                 if (key === link) {
-                    config[key].push(newRectangle.model);
+                    config[key].push(newRectangle);
                 } else {
-                    config[link] = [newRectangle.model];
+                    config[link] = [newRectangle];
                 }
             }
         }
@@ -52,12 +52,8 @@ function render(currentUrl) {
     chrome.storage.local.get(config, function (result) {
         for (key in result) {
             if (key === currentUrl) {
-                var modelToRender = {
-                    name: 'render',
-                    model: result[key]
-                };
                 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                    chrome.tabs.sendMessage(tabs[0].id, {model: modelToRender}, function(response) {
+                    chrome.tabs.sendMessage(null, {name: 'render', model: result[key]}, function(response) {
 
                     });
                 });
