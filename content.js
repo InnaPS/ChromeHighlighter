@@ -77,6 +77,17 @@ function init() {
         controller.toggleSelection(e.shiftKey);
     };
 
+    chrome.runtime.onMessage.addListener(
+        function(request, sender, sendResponse) {
+
+            if (request.type === 'render'){
+                //render(request.model);
+                console.log(111);
+            }
+            return true;
+
+        });
+
 }
 
 
