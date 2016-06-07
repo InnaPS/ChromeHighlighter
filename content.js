@@ -37,7 +37,9 @@ function init() {
             controller.view.style.width = model.width + 'px';
             controller.view.style.height = model.height + 'px';
         },
-        finish: function () {
+        finish: function (isShift) {
+            if (!isShift) return;
+
             controller.view = null;
             controller.toggleSelection(false);
             document.body.removeChild(document.getElementById('current-selection'));
@@ -68,7 +70,7 @@ function init() {
     };
 
     document.body.onmouseup = function (e) {
-        controller.finish(e);
+        controller.finish(e.shiftKey);
     };
 
     document.body.onkeyup = function (e) {
