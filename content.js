@@ -44,7 +44,8 @@ function init() {
             controller.toggleSelection(false);
             document.body.removeChild(document.getElementById('current-selection'));
             chrome.runtime.sendMessage({type: 'update', model: controller.getModel()}, function (response) {
-                //render command is procceded here
+                //render command is proceeded here
+                render(response);
             });
         },
         getModel: function () {
@@ -76,17 +77,6 @@ function init() {
     document.body.onkeyup = function (e) {
         controller.toggleSelection(e.shiftKey);
     };
-
-    chrome.runtime.onMessage.addListener(
-        function(request, sender, sendResponse) {
-
-            if (request.type === 'render'){
-                //render(request.model);
-                console.log(111);
-            }
-            return true;
-
-        });
 
 }
 
