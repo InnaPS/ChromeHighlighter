@@ -15,7 +15,7 @@ function setup() {
     chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
             if (request.type == 'update'){
-                sendResponse(update(request.model));
+                sendResponse(update(request));
         }
         return true;
 
@@ -24,41 +24,30 @@ function setup() {
 }
 
 function update(newRectangle) {
-    chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
-        updateModel(tabs[0].url);
-    });
-
-    function updateModel(url) {
-        var link = url;
+    var link = newRectangle.url;
         if (_.isEmpty(config)) {
-            config[link] = [newRectangle];
+            config[link] = [newRectangle.model];
         } else {
             for (key in config) {
                 if (key === link) {
-                    config[key].push(newRectangle);
+                    config[key].push(newRectangle.model);
                 } else {
-                    config[link] = [newRectangle];
+                    config[link] = [newRectangle.model];
                 }
             }
         }
-        chrome.storage.local.set(config, function () { });
         var modelNew = render(link);
-        console.log(modelNew);
         return modelNew;
-    }
-
 }
 
 function render(currentUrl) {
-    chrome.storage.local.get(config, function (result) {
-        for (key in result) {
+    var modelToRender = null;
+        for (key in config) {
             if (key === currentUrl) {
-                var modelToRender = result[key];
-
-                return modelToRender;
+                modelToRender = config[key];
             }
         }
-    });
+    return modelToRender;
 }
 
 
