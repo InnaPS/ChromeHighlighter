@@ -14,9 +14,8 @@ function setup() {
 
     chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
-
             if (request.type == 'update'){
-                update(request.model);
+                sendResponse(update(request.model));
         }
         return true;
 
@@ -43,7 +42,9 @@ function update(newRectangle) {
             }
         }
         chrome.storage.local.set(config, function () { });
-        render(link);
+        var modelNew = render(link);
+        console.log(modelNew);
+        return modelNew;
     }
 
 }
@@ -52,11 +53,9 @@ function render(currentUrl) {
     chrome.storage.local.get(config, function (result) {
         for (key in result) {
             if (key === currentUrl) {
-                chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                    chrome.tabs.sendMessage(null, {name: 'render', model: result[key]}, function(response) {
+                var modelToRender = result[key];
 
-                    });
-                });
+                return modelToRender;
             }
         }
     });
