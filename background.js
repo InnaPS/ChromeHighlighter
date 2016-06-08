@@ -1,5 +1,5 @@
 var config = {};
-var toggle = true;
+var toggle = false;
 
 function setup() {
 
@@ -12,6 +12,19 @@ function setup() {
                 });
             });
         }
+    });
+
+    chrome.browserAction.onClicked.addListener(function(tabId, changeInfo, tab) {
+        toggle = !toggle;
+        if(toggle){
+            chrome.browserAction.setIcon({path: "images/icon-on.png"});
+            render(tabId);
+        }
+        else{
+            chrome.browserAction.setIcon({path: "images/icon-off.png"});
+            render(tabId);
+        }
+
     });
 
     chrome.runtime.onMessage.addListener(
@@ -34,7 +47,7 @@ function update(tab, model) {
 }
 
 function render(tab) {
-    send(tab, {command: 'render', model: config[tab.url] || []});
+    send(tab, {command: 'render', model: toggle ? config[tab.url] || [] : []});
 }
 
 function send(tab, msg) {
