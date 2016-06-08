@@ -16,7 +16,7 @@
 
       "browser_action": {
           "default_title": "Active. Press this button to deactivate. Press 'Shift' to highlight the text",
-          "default_icon": "images/icon.png"
+          "default_icon": "images/icon-on.png"
       },
 
       "background": {

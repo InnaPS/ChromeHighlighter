@@ -19,7 +19,7 @@ function init() {
             };
             controller.view = document.createElement('div');
             controller.view.id = 'current-selection';
-            controller.view.className = 'viewRect';
+            controller.view.className = 'rectangle';
             document.body.appendChild(controller.view);
         },
         update: function (isShift, x, y) {
@@ -49,8 +49,8 @@ function init() {
             return {
                 left: controller.end.x - controller.start.x < 0 ? controller.end.x : controller.start.x,
                 top: controller.end.y - controller.start.y < 0 ? controller.end.y : controller.start.y,
-                width: ~~(controller.end.x - controller.start.x),
-                height: ~~(controller.end.y - controller.start.y)
+                width: Math.abs(controller.end.x - controller.start.x),
+                height: Math.abs(controller.end.y - controller.start.y)
             }
         }
     };
