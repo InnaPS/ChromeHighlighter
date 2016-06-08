@@ -43,7 +43,8 @@ function init() {
             controller.view = null;
             controller.toggleSelection(false);
             document.body.removeChild(document.getElementById('current-selection'));
-            chrome.runtime.sendMessage({type: 'update', model: controller.getModel()}, function (response) {
+            chrome.runtime.sendMessage(
+                {type: 'update', url: location.href, model: controller.getModel()}, function (response) {
                 //render command is proceeded here
                 render(response);
             });
@@ -88,16 +89,15 @@ function render(model) {
             document.body.removeChild(oldRects[k]);
         }
     }
-    for (var i = 0; i < model.model.length; i++) {
-        var restoredRect = document.createview('div');
+    for (var i = 0; i < model.length; i++) {
+        var restoredRect = document.createElement('div');
         restoredRect.className = 'rectangle';
-        restoredRect.style.left = model.model[i].x;
-        restoredRect.style.top = model.model[i].y;
-        restoredRect.style.width = model.model[i].width;
-        restoredRect.style.height = model.model[i].height;
+        restoredRect.style.left = model[i].left + 'px';
+        restoredRect.style.top = model[i].top + 'px';
+        restoredRect.style.width = model[i].width + 'px';
+        restoredRect.style.height = model[i].height + 'px';
         document.body.appendChild(restoredRect);
     }
-
 }
 
 
