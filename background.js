@@ -1,55 +1,49 @@
-
 var config = {};
 var toggle = true;
 
 function setup() {
-    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+
+    chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         if (changeInfo.status == 'complete') {
             chrome.tabs.insertCSS(null, {file: "mainStyles.css"});
-            chrome.tabs.executeScript(null, { file: "lodash.js" }, function() {
-                chrome.tabs.executeScript(null, { file: "content.js" })
+            chrome.tabs.executeScript(null, {file: "lodash.js"}, function () {
+                chrome.tabs.executeScript(null, {file: "content.js"}, function() {
+                    render(tab);
+                });
             });
         }
     });
 
     chrome.runtime.onMessage.addListener(
-        function(request, sender, sendResponse) {
-            if (request.type == 'update'){
-                sendResponse(update(request));
-        }
-        return true;
+        function (msg, sender) {
+            if (msg.command === 'update') {
+                update(sender.tab, msg.model);
+                render(sender.tab);
+            }
+            return true;
 
+        });
+
+}
+
+function update(tab, model) {
+    config[tab.url] = config[tab.url] || [];
+    config[tab.url].push(model);
+    chrome.storage.sync.set({'highlighter': config}, function() {
     });
-
 }
 
-function update(newRectangle) {
-    var link = newRectangle.url;
-        if (_.isEmpty(config)) {
-            config[link] = [newRectangle.model];
-        } else {
-            for (key in config) {
-                if (key === link) {
-                    config[key].push(newRectangle.model);
-                } else {
-                    config[link] = [newRectangle.model];
-                }
-            }
-        }
-        var modelNew = render(link);
-        return modelNew;
+function render(tab) {
+    send(tab, {command: 'render', model: config[tab.url] || []});
 }
 
-function render(currentUrl) {
-    var modelToRender = null;
-        for (key in config) {
-            if (key === currentUrl) {
-                modelToRender = config[key];
-            }
-        }
-    return modelToRender;
+function send(tab, msg) {
+    chrome.tabs.sendMessage(tab.id, msg);
 }
 
 
-setup();
+chrome.storage.sync.get("highlighter", function(_config) {
+    config = _config;
+    setup();
+});
 

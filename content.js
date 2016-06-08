@@ -37,17 +37,13 @@ function init() {
             controller.view.style.width = model.width + 'px';
             controller.view.style.height = model.height + 'px';
         },
-        finish: function (isShift) {
-            if (!isShift) return;
-
+        finish: function () {
+            if( !controller.view ) return;
+            
             controller.view = null;
             controller.toggleSelection(false);
             document.body.removeChild(document.getElementById('current-selection'));
-            chrome.runtime.sendMessage(
-                {type: 'update', url: location.href, model: controller.getModel()}, function (response) {
-                //render command is proceeded here
-                render(response);
-            });
+            chrome.runtime.sendMessage({command: 'update', model: controller.getModel()});
         },
         getModel: function () {
             return {
@@ -72,7 +68,7 @@ function init() {
     };
 
     document.body.onmouseup = function (e) {
-        controller.finish(e.shiftKey);
+        controller.finish();
     };
 
     document.body.onkeyup = function (e) {
@@ -101,4 +97,10 @@ function render(model) {
 }
 
 
-    init();
+chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
+    if (msg.command === 'render') {
+        render(msg.model);
+    }
+});
+
+init();
