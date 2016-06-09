@@ -1,8 +1,6 @@
 var config = {};
-var toggle = false;
 
 function setup() {
-
     chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         if (changeInfo.status == 'complete') {
             chrome.tabs.insertCSS(null, {file: "mainStyles.css"});
@@ -14,17 +12,8 @@ function setup() {
         }
     });
 
-    chrome.browserAction.onClicked.addListener(function(tabId, changeInfo, tab) {
-        toggle = !toggle;
-        if(toggle){
-            chrome.browserAction.setIcon({path: "images/icon-on.png"});
-            render(tabId);
-        }
-        else{
-            chrome.browserAction.setIcon({path: "images/icon-off.png"});
-            render(tabId);
-        }
-
+    chrome.browserAction.onClicked.addListener(function(tabId) {
+        updateState(tabId);
     });
 
     chrome.runtime.onMessage.addListener(
@@ -40,20 +29,36 @@ function setup() {
 }
 
 function update(tab, model) {
-    config[tab.url] = config[tab.url] || [];
-    config[tab.url].push(model);
+    config[tab.url] = config[tab.url] || {};
+    config[tab.url].enable = false;
+    config[tab.url].data = [];
+    config[tab.url].data.push(model);
     chrome.storage.sync.set({'highlighter': config}, function() {
     });
+    console.log(config);
 }
 
 function render(tab) {
-    send(tab, {command: 'render', model: toggle ? config[tab.url] || [] : []});
+    send(tab, {command: 'render', model: config[tab.url]? (config[tab.url].enable ? config[tab.url].data || [] : []) : []});
 }
 
 function send(tab, msg) {
     chrome.tabs.sendMessage(tab.id, msg);
 }
 
+function updateState(tab) {
+    if(config[tab]) {
+        if(config[tab].enable) {
+            config[tab].enable = false;
+            chrome.browserAction.setIcon({path: "images/icon-off.png"});
+        } else {
+            config[tab].enable = true;
+            chrome.browserAction.setIcon({path: "images/icon-on.png"});
+        }
+        render(tab);
+    }
+
+}
 
 chrome.storage.sync.get("highlighter", function(_config) {
     config = _config;
