@@ -12,9 +12,6 @@ function setup() {
         }
     });
 
-    chrome.browserAction.onClicked.addListener(function(tabId) {
-        updateState(tabId);
-    });
 
     chrome.runtime.onMessage.addListener(
         function (msg, sender) {
@@ -29,17 +26,15 @@ function setup() {
 }
 
 function update(tab, model) {
-    config[tab.url] = config[tab.url] || {};
-    config[tab.url].enable = false;
-    config[tab.url].data = [];
-    config[tab.url].data.push(model);
+    config[tab.url] = config[tab.url] || [];
+    config[tab.url].push(model);
     chrome.storage.sync.set({'highlighter': config}, function() {
     });
     console.log(config);
 }
 
 function render(tab) {
-    send(tab, {command: 'render', model: config[tab.url]? (config[tab.url].enable ? config[tab.url].data || [] : []) : []});
+    send(tab, {command: 'render', model: config[tab.url] || [] });
 }
 
 function send(tab, msg) {
