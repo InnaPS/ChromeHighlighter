@@ -85,6 +85,7 @@ function render(model) {
             document.body.removeChild(oldRects[k]);
         }
     }
+
     for (var i = 0; i < model.length; i++) {
         var restoredRect = document.createElement('div');
         restoredRect.className = 'rectangle';
@@ -93,6 +94,35 @@ function render(model) {
         restoredRect.style.width = model[i].width + 'px';
         restoredRect.style.height = model[i].height + 'px';
         document.body.appendChild(restoredRect);
+
+        var buttonDelete = document.createElement('div');
+        buttonDelete.className = 'button';
+        buttonDelete.style.top = '5px';
+        buttonDelete.style.left = model[i].width - 5 - 16 + 'px';
+        restoredRect.appendChild(buttonDelete);
+
+        var buttonMove = document.createElement('div');
+        buttonMove.className = 'button';
+        buttonMove.style.top = model[i].height - 5 - 16 + 'px';
+        buttonMove.style.left = model[i].width - 5 - 16 + 'px';
+        restoredRect.appendChild(buttonMove);
+    }
+
+    var newRects = document.querySelectorAll('.rectangle');
+    for (var j = 0; j < newRects.length; j++) {
+        newRects[j].onmouseenter = function() {
+            //this.style.backgroundColor = 'blue';
+            var buttons = this.children;
+            for (var k = 0; k < buttons.length; k++) {
+                buttons[k].style.display = "block";
+            }
+        };
+        newRects[j].onmouseleave = function() {
+            var buttons = this.children;
+            for (var k = 0; k < buttons.length; k++) {
+                buttons[k].style.display = "";
+            }
+        };
     }
 }
 
