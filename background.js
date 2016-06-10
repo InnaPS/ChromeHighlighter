@@ -20,7 +20,7 @@ function setup() {
                 render(sender.tab);
             }
             if (msg.command === 'updateModel') {
-                update(sender.tab, msg.model);
+                updateModel(sender.tab, msg.model);
                 render(sender.tab);
             }
             return true;
@@ -30,21 +30,25 @@ function setup() {
 }
 
 function update(tab, model) {
-    config[tab.url] = config[tab.url] || [];
-    config[tab.url].push(model);
-    chrome.storage.sync.set({'highlighter': config}, function() {
-    });
-    console.log(config);
+    config[tab.url] = config[tab.url] || {};
+    config[tab.url].enable = false;
+    if (config[tab.url].data) {
+        config[tab.url].data.push(model)
+    } else {
+        config[tab.url].data = [];
+        config[tab.url].data.push(model) ;
+    }
 }
 
 function updateModel(tab, model){
-    config[tab.url] = model;
-    chrome.storage.sync.set({'highlighter': config}, function() {
+    config[tab.url].data = model;
+
+    chrome.storage.sync.set(config, function() {
     });
 }
 
 function render(tab) {
-    send(tab, {command: 'render', model: config[tab.url] || [] });
+    send(tab, {command: 'render', model: config[tab.url] ? config[tab.url].data || [] : [] });
 }
 
 function send(tab, msg) {
@@ -65,7 +69,7 @@ function updateState(tab) {
 
 }
 
-chrome.storage.sync.get("highlighter", function(_config) {
+chrome.storage.sync.get(config, function(_config) {
     config = _config;
     setup();
 });
