@@ -99,6 +99,7 @@ function render(model) {
         buttonDelete.className = 'button';
         buttonDelete.style.top = '5px';
         buttonDelete.style.left = model[i].width - 5 - 16 + 'px';
+        buttonDelete.i = i;
         restoredRect.appendChild(buttonDelete);
 
         var buttonMove = document.createElement('div');
@@ -106,12 +107,21 @@ function render(model) {
         buttonMove.style.top = model[i].height - 5 - 16 + 'px';
         buttonMove.style.left = model[i].width - 5 - 16 + 'px';
         restoredRect.appendChild(buttonMove);
+
+        buttonDelete.onclick = function() {
+            document.body.removeChild(this.parentElement);
+            var a = model.splice(this.i, 1);
+            chrome.runtime.sendMessage({command: 'updateModel', model: model});
+
+        };
+        buttonMove.onclick = function() {
+
+        };
     }
 
     var newRects = document.querySelectorAll('.rectangle');
     for (var j = 0; j < newRects.length; j++) {
         newRects[j].onmouseenter = function() {
-            //this.style.backgroundColor = 'blue';
             var buttons = this.children;
             for (var k = 0; k < buttons.length; k++) {
                 buttons[k].style.display = "block";
@@ -123,6 +133,7 @@ function render(model) {
                 buttons[k].style.display = "";
             }
         };
+
     }
 }
 
