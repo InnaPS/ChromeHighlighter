@@ -23,5 +23,5 @@
           "scripts": ["background.js", "lodash.js"]
       },
 
-      "content_security_policy": "script-src 'self' https://cdn.jsdelivr.net; object-src 'self'"
+      "web_accessible_resources": ["images/icon-delete-small.png"]
 }
