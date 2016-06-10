@@ -19,6 +19,10 @@ function setup() {
                 update(sender.tab, msg.model);
                 render(sender.tab);
             }
+            if (msg.command === 'updateModel') {
+                update(sender.tab, msg.model);
+                render(sender.tab);
+            }
             return true;
 
         });
@@ -31,6 +35,12 @@ function update(tab, model) {
     chrome.storage.sync.set({'highlighter': config}, function() {
     });
     console.log(config);
+}
+
+function updateModel(tab, model){
+    config[tab.url] = model;
+    chrome.storage.sync.set({'highlighter': config}, function() {
+    });
 }
 
 function render(tab) {
