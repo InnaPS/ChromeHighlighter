@@ -96,26 +96,63 @@ function render(model) {
         document.body.appendChild(restoredRect);
 
         var buttonDelete = document.createElement('div');
-        buttonDelete.className = 'button';
+        buttonDelete.className = 'buttonDelete';
         buttonDelete.style.top = '5px';
         buttonDelete.style.left = model[i].width - 5 - 16 + 'px';
         buttonDelete.i = i;
+        //var link = chrome.extension.getURL('logo.png');
+        //buttonDelete.style.backgroundImage = "('" + link + "')";
         restoredRect.appendChild(buttonDelete);
 
         var buttonMove = document.createElement('div');
-        buttonMove.className = 'button';
-        buttonMove.style.top = model[i].height - 5 - 16 + 'px';
-        buttonMove.style.left = model[i].width - 5 - 16 + 'px';
+        buttonMove.className = 'buttonMove';
+        buttonMove.style.top = '5px';
+        buttonMove.style.left = model[i].width - 2*5 - 2*16 + 'px';
+        buttonMove.i = i;
         restoredRect.appendChild(buttonMove);
 
         buttonDelete.onclick = function() {
             document.body.removeChild(this.parentElement);
-            var a = model.splice(this.i, 1);
+            model.splice(this.i, 1);
             chrome.runtime.sendMessage({command: 'updateModel', model: model});
 
         };
         buttonMove.onclick = function() {
+            var recttoMove = this.parentElement;
+            recttoMove.onmousedown = function(e) {
+                var coords = getCoords(recttoMove);
 
+                function getCoords(elem) {
+                    var box = elem.getBoundingClientRect();
+                    return {
+                        top: box.top + pageYOffset,
+                        left: box.left + pageXOffset
+                    };
+                }
+                var shiftX = e.pageX - coords.left;
+                var shiftY = e.pageY - coords.top;
+
+                moveAt(e);
+
+                function moveAt(e) {
+                    recttoMove.style.left = e.pageX - shiftX + 'px';
+                    recttoMove.style.top = e.pageY - shiftY + 'px';
+                }
+
+                document.onmousemove = function(e) {
+                    moveAt(e);
+                };
+
+                recttoMove.onmouseup = function() {
+                    document.onmousemove = null;
+                    recttoMove.onmouseup = null;
+                };
+
+            };
+
+            recttoMove.ondragstart = function() {
+                return false;
+            };
         };
     }
 
