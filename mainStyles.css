@@ -11,11 +11,17 @@
     user-select: none;
     cursor: crosshair;
 }
-.button {
+.buttonDelete, .buttonMove {
     position: absolute;
     display: none;
     cursor: pointer;
     width: 16px;
     height: 16px;
-    background: red;
+    border-radius: 50%;
+}
+.buttonDelete {
+    background-color: red;
+}
+.buttonMove {
+    background-color: blue;
 }
