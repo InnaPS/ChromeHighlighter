@@ -118,7 +118,8 @@ function render(model) {
 
         };
         buttonMove.onclick = function() {
-            var recttoMove = this.parentElement;
+            var self = this,
+            recttoMove = this.parentElement;
             recttoMove.onmousedown = function(e) {
                 var coords = getCoords(recttoMove);
 
@@ -143,9 +144,13 @@ function render(model) {
                     moveAt(e);
                 };
 
-                recttoMove.onmouseup = function() {
+                recttoMove.onmouseup = function(e) {
                     document.onmousemove = null;
                     recttoMove.onmouseup = null;
+                    var newCoords = getCoords(this);
+                    model[self.i].left = newCoords.left;
+                    model[self.i].top = newCoords.top;
+                    chrome.runtime.sendMessage({command: 'updateModel', model: model});
                 };
 
             };
@@ -170,7 +175,21 @@ function render(model) {
                 buttons[k].style.display = "";
             }
         };
+         newRects[j].onclick = function(e) {
+             window.event.srcElement.style.visibility = "hidden";
+             var bottomElement = document.elementFromPoint((navigator.appName.substring(0,3) == "Net") ? e.clientX : window.event.x,(navigator.appName.substring(0,3) == "Net") ? e.clientY : window.event.y);
+             window.event.srcElement.style.visibility = "visible";
+             bottomElement.click();
 
+         };
+        newRects[j].onmousemove = function(e) {
+            window.event.srcElement.style.visibility = "hidden";
+            var bottomElement = document.elementFromPoint((navigator.appName.substring(0,3) == "Net") ? e.clientX : window.event.x,(navigator.appName.substring(0,3) == "Net") ? e.clientY : window.event.y);
+            window.event.srcElement.style.visibility = "visible";
+            if (bottomElement.nodeName === "A") {
+                bottomElement.style.cursor = "pointer";
+            }
+        };
     }
 }
 
