@@ -6,12 +6,13 @@ function setup() {
             chrome.tabs.insertCSS(null, {file: "mainStyles.css"});
             chrome.tabs.executeScript(null, {file: "lodash.js"}, function () {
                 chrome.tabs.executeScript(null, {file: "content.js"}, function() {
+                    config[tab.url].enable = false;
+                    chrome.browserAction.setIcon({path: "images/icon-off.png"});
                     render(tab);
                 });
             });
         }
     });
-
 
     chrome.runtime.onMessage.addListener(
         function (msg, sender) {
@@ -27,11 +28,24 @@ function setup() {
 
         });
 
+    chrome.browserAction.onClicked.addListener(function(tab) {
+        if (!config[tab.url].enable) {
+            config[tab.url].enable = true;
+            render(tab);
+            chrome.browserAction.setIcon({path: "images/icon-on.png"});
+        } else {
+            config[tab.url].enable = false;
+            render(tab);
+            chrome.browserAction.setIcon({path: "images/icon-off.png"});
+        }
+
+    });
+
 }
 
 function update(tab, model) {
     config[tab.url] = config[tab.url] || {};
-    config[tab.url].enable = false;
+    //config[tab.url].enable = false;
     if (config[tab.url].data) {
         config[tab.url].data.push(model)
     } else {
@@ -48,7 +62,7 @@ function updateModel(tab, model){
 }
 
 function render(tab) {
-    send(tab, {command: 'render', model: config[tab.url] ? config[tab.url].data || [] : [] });
+    send(tab, {command: 'render', model: config[tab.url] ? (config[tab.url].enable ? config[tab.url].data || [] : []) : [] });
 }
 
 function send(tab, msg) {
