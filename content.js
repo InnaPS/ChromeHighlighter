@@ -59,11 +59,11 @@ function init() {
     };
 
     document.body.onmousedown = function (e) {
-        controller.create(e.shiftKey, e.pageX, e.pageY)
+        controller.create(e.shiftKey, e.pageX, e.pageY);
     };
 
     document.body.onmousemove = function (e) {
-        controller.update(e.shiftKey, e.pageX, e.pageY)
+        controller.update(e.shiftKey, e.pageX, e.pageY);
     };
 
     document.body.onmouseup = function (e) {
@@ -187,6 +187,26 @@ function render(model) {
             }
         };
     }*/
+
+    document.documentElement.onmousemove = function (e) {
+        var newRects = document.querySelectorAll('.rectangle');
+        for (var j = 0; j < newRects.length; j++){
+            var mouseCoords = {
+                left: e.pageX,
+                top: e.pageY
+            };
+            if (mouseCoords.left >= newRects[j].style.left.slice(0, -2)
+                && mouseCoords.left < (+newRects[j].style.left.slice(0, -2) + +newRects[j].style.width.slice(0, -2))
+                && mouseCoords.top >= newRects[j].style.top.slice(0, -2)
+                && mouseCoords.top <= (+newRects[j].style.top.slice(0, -2) + +newRects[j].style.height.slice(0, -2))) {
+                newRects[j].className = 'rectangle selected';
+            } else {
+                newRects[j].className = 'rectangle';
+            }
+
+        }
+    };
+
 }
 
 
