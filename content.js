@@ -1,3 +1,5 @@
+var modelToRender = null;
+
 function init() {
 
     var controller = {
@@ -64,6 +66,28 @@ function init() {
 
     document.body.onmousemove = function (e) {
         controller.update(e.shiftKey, e.pageX, e.pageY);
+        if(modelToRender != null) {
+            for (var j = 0; j < modelToRender.length; j++){
+                var mouseCoords = {
+                    left: e.pageX,
+                    top: e.pageY
+                };
+                if (mouseCoords.left >= modelToRender[j].left
+                    && mouseCoords.left <= (modelToRender[j].left + modelToRender[j].width)
+                    && mouseCoords.top >= modelToRender[j].top
+                    && mouseCoords.top <= (modelToRender[j].top + modelToRender[j].height)) {
+                    console.log(111);
+                    var newRects = document.querySelectorAll('.rectangle');
+                    for (var m = 0; m < newRects.length; m++) {
+                        if (newRects[m].style.left.slice(0, -2) == modelToRender[j].left) {
+                            newRects[m].className = 'rectangle selected';
+                        }else {
+                            newRects[m].className = 'rectangle';
+                        }
+                    }
+                }
+            }
+        }
     };
 
     document.body.onmouseup = function (e) {
@@ -157,61 +181,12 @@ function render(model) {
             };
         };
     }
-
-    /*var newRects = document.querySelectorAll('.rectangle');
-    for (var j = 0; j < newRects.length; j++) {
-        newRects[j].onmouseenter = function() {
-            var buttons = this.children;
-            for (var k = 0; k < buttons.length; k++) {
-                buttons[k].style.display = "block";
-            }
-        };
-        newRects[j].onmouseleave = function() {
-            var buttons = this.children;
-            for (var k = 0; k < buttons.length; k++) {
-                buttons[k].style.display = "";
-            }
-        };
-        newRects[j].onclick = function(e) {
-            window.event.srcElement.style.visibility = "hidden";
-            var bottomElement = document.elementFromPoint((navigator.appName.substring(0,3) == "Net") ? e.clientX : window.event.x,(navigator.appName.substring(0,3) == "Net") ? e.clientY : window.event.y);
-            window.event.srcElement.style.visibility = "visible";
-            bottomElement.click();
-        };
-        newRects[j].onmousemove = function(e) {
-            window.event.srcElement.style.visibility = "hidden";
-            var bottomElement = document.elementFromPoint((navigator.appName.substring(0,3) == "Net") ? e.clientX : window.event.x,(navigator.appName.substring(0,3) == "Net") ? e.clientY : window.event.y);
-            window.event.srcElement.style.visibility = "visible";
-            if (bottomElement.nodeName === "A" && bottomElement.nodeName === "BUTTON") {
-                bottomElement.style.cursor = "pointer";
-            }
-        };
-    }*/
-
-    document.documentElement.onmousemove = function (e) {
-        var newRects = document.querySelectorAll('.rectangle');
-        for (var j = 0; j < newRects.length; j++){
-            var mouseCoords = {
-                left: e.pageX,
-                top: e.pageY
-            };
-            if (mouseCoords.left >= newRects[j].style.left.slice(0, -2)
-                && mouseCoords.left < (+newRects[j].style.left.slice(0, -2) + +newRects[j].style.width.slice(0, -2))
-                && mouseCoords.top >= newRects[j].style.top.slice(0, -2)
-                && mouseCoords.top <= (+newRects[j].style.top.slice(0, -2) + +newRects[j].style.height.slice(0, -2))) {
-                newRects[j].className = 'rectangle selected';
-            } else {
-                newRects[j].className = 'rectangle';
-            }
-
-        }
-    };
-
 }
 
 
 chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
     if (msg.command === 'render') {
+        modelToRender = msg.model;
         render(msg.model);
     }
 });
