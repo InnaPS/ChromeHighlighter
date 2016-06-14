@@ -39,7 +39,6 @@ function init() {
         },
         finish: function () {
             if( !controller.view ) return;
-            
             controller.view = null;
             controller.toggleSelection(false);
             document.body.removeChild(document.getElementById('current-selection'));
@@ -159,7 +158,7 @@ function render(model) {
         };
     }
 
-    var newRects = document.querySelectorAll('.rectangle');
+    /*var newRects = document.querySelectorAll('.rectangle');
     for (var j = 0; j < newRects.length; j++) {
         newRects[j].onmouseenter = function() {
             var buttons = this.children;
@@ -187,7 +186,7 @@ function render(model) {
                 bottomElement.style.cursor = "pointer";
             }
         };
-    }
+    }*/
 }
 
 
