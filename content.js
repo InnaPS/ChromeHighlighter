@@ -100,8 +100,6 @@ function render(model) {
         buttonDelete.style.top = '5px';
         buttonDelete.style.left = model[i].width - 5 - 16 + 'px';
         buttonDelete.i = i;
-        //var link = chrome.extension.getURL('logo.png');
-        //buttonDelete.style.backgroundImage = "('" + link + "')";
         restoredRect.appendChild(buttonDelete);
 
         var buttonMove = document.createElement('div');
@@ -195,9 +193,7 @@ function render(model) {
 
 chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
     if (msg.command === 'render') {
-        if (msg.model){
-            render(msg.model);
-        }
+        render(msg.model);
     }
 });
 
