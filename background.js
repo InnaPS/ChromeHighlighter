@@ -1,20 +1,35 @@
 var config = {};
 
 function setup() {
+
     chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         if (changeInfo.status == 'complete') {
             chrome.tabs.insertCSS(null, {file: "mainStyles.css"});
             chrome.tabs.executeScript(null, {file: "lodash.js"}, function () {
                 chrome.tabs.executeScript(null, {file: "content.js"}, function() {
-                    chrome.browserAction.setIcon({path: "images/icon-off.png"});
-                    config[tab.url] = config[tab.url] || {};
-                    config[tab.url].enable = false;
-                    /*chrome.storage.sync.set(config, function() {
-                    });*/
                     render(tab);
                 });
             });
         }
+    });
+
+    chrome.tabs.onActivated.addListener(function(activeInfo) {
+        chrome.tabs.get(activeInfo.tabId, function(tab){
+            if (config[tab.url] != undefined) {
+                if (config[tab.url].enable) {
+                    render(tab);
+                    chrome.browserAction.setIcon({path: "images/icon-on.png"});
+                } else {
+                    render(tab);
+                    chrome.browserAction.setIcon({path: "images/icon-off.png"});
+                }
+            } else {
+                config[tab.url] = {};
+                config[tab.url].enable = false;
+                render(tab);
+                chrome.browserAction.setIcon({path: "images/icon-off.png"});
+            }
+        });
     });
 
     chrome.runtime.onMessage.addListener(
@@ -32,7 +47,13 @@ function setup() {
         });
 
     chrome.browserAction.onClicked.addListener(function(tab) {
-        if (config[tab.url]) {
+        if (config[tab.url] === undefined) {
+            config[tab.url] = {};
+            config[tab.url].enable = true;
+            render(tab);
+            chrome.browserAction.setIcon({path: "images/icon-on.png"});
+
+        } else {
             if (!config[tab.url].enable) {
                 config[tab.url].enable = true;
                 render(tab);
@@ -48,16 +69,16 @@ function setup() {
 }
 
 function update(tab, model) {
-    if(config[tab.url].enable){
-        if (config[tab.url].data) {
-            config[tab.url].data.push(model)
-        } else {
-            config[tab.url].data = [];
-            config[tab.url].data.push(model) ;
-        }
-        chrome.storage.sync.set(config, function() {
-        });
+    config[tab.url] = config[tab.url] || {};
+    if (config[tab.url].data) {
+        config[tab.url].data.push(model)
+    } else {
+        config[tab.url].data = [];
+        config[tab.url].data.push(model) ;
     }
+        chrome.storage.sync.set(config, function() {
+    });
+
 }
 
 function updateModel(tab, model){
@@ -67,7 +88,7 @@ function updateModel(tab, model){
 }
 
 function render(tab) {
-    send(tab, {command: 'render', model: config[tab.url].enable ? config[tab.url].data || [] : []});
+    send(tab, {command: 'render', enable: config[tab.url] ? config[tab.url].enable : false, model: config[tab.url] ? (config[tab.url].enable ? config[tab.url].data || [] : []) : []});
 }
 
 function send(tab, msg) {
