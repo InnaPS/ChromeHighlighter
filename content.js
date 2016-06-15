@@ -138,7 +138,7 @@ function render(model) {
             chrome.runtime.sendMessage({command: 'updateModel', model: model});
 
         };
-        buttonMove.onclick = function() {
+        buttonMove.onmousedown = function() {
             var self = this,
             recttoMove = this.parentElement;
             recttoMove.onmousedown = function(e) {
@@ -169,8 +169,25 @@ function render(model) {
                     document.onmousemove = null;
                     recttoMove.onmouseup = null;
                     var newCoords = getCoords(this);
-                    model[self.i].left = newCoords.left;
-                    model[self.i].top = newCoords.top;
+                    if (newCoords.left < 0) {
+                        model[self.i].left = 0;
+                    }
+                    if (newCoords.left + model[self.i].width > document.documentElement.clientWidth) {
+                        model[self.i].left = document.documentElement.clientWidth - model[self.i].width;
+                    }
+                    if (newCoords.left > 0 && newCoords.left + model[self.i].width < document.documentElement.clientWidth) {
+                        model[self.i].left = newCoords.left;
+                    }
+                    if (newCoords.top < 0) {
+                        model[self.i].top = 0;
+                    }
+                    if (newCoords.top + model[self.i].height > document.documentElement.scrollHeight) {
+                        model[self.i].top = document.documentElement.scrollHeight - model[self.i].height;
+                    }
+                    if (newCoords.top > 0 && newCoords.top + model[self.i].height < document.documentElement.scrollHeight) {
+                        model[self.i].top = newCoords.top;
+                    }
+
                     chrome.runtime.sendMessage({command: 'updateModel', model: model});
                 };
 
