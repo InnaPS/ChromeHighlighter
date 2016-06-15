@@ -9,8 +9,8 @@ function setup() {
                     chrome.browserAction.setIcon({path: "images/icon-off.png"});
                     config[tab.url] = config[tab.url] || {};
                     config[tab.url].enable = false;
-                    chrome.storage.sync.set(config, function() {
-                    });
+                    /*chrome.storage.sync.set(config, function() {
+                    });*/
                     render(tab);
                 });
             });
@@ -55,6 +55,8 @@ function update(tab, model) {
             config[tab.url].data = [];
             config[tab.url].data.push(model) ;
         }
+        chrome.storage.sync.set(config, function() {
+        });
     }
 }
 
