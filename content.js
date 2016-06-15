@@ -100,6 +100,22 @@ function init() {
 
 }
 
+function stop() {
+    document.body.onkeydown = function (e) {
+    };
+
+    document.body.onmousedown = function (e) {
+    };
+
+    document.body.onmousemove = function (e) {
+    };
+
+    document.body.onmouseup = function (e) {
+    };
+
+    document.body.onkeyup = function (e) {
+    };
+}
 
 function render(model) {
     var oldRects = document.querySelectorAll('.rectangle');
@@ -205,7 +221,12 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
     if (msg.command === 'render') {
         modelToRender = msg.model;
         render(msg.model);
+        if (msg.enable) {
+            init();
+        } else {
+            stop();
+        }
     }
 });
 
-init();
+
