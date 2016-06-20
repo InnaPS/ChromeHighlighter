@@ -8,7 +8,7 @@
 .rectangle:hover .buttonDelete, .rectangle:hover .buttonMove {
     display: block;
 }
-.rectangle .selected {
+.rectangle, .selected {
     pointer-events: none;
 }
 .non-selectable {
